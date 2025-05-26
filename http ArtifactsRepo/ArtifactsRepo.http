@@ -1,0 +1,61 @@
+@ArtifactsRepo_HostAddress = http://localhost:5259
+
+### Get all categories
+GET {{ArtifactsRepo_HostAddress}}/api/categories
+
+### Create a category
+POST {{ArtifactsRepo_HostAddress}}/api/categories
+content-type: application/json
+
+{
+    "name": "New Category",
+    "parentCategoryId": null
+}
+
+### Update a category by ID
+PUT {{ArtifactsRepo_HostAddress}}/api/categories/1
+content-type: application/json
+
+{
+    "name": "Updated Category Name",
+    "parentCategoryId": 2
+}
+
+### Delete a category by ID
+DELETE {{ArtifactsRepo_HostAddress}}/api/categories/1
+
+### Get all artifacts
+GET {{ArtifactsRepo_HostAddress}}/api/artifacts
+
+### Create an artifact
+POST {{ArtifactsRepo_HostAddress}}/api/artifacts
+content-type: application/json
+
+{
+    "title": "New Artifact",
+    "description": "Description",
+    "url": "http://example.com",
+    "documentationType": "API",
+    "programmingLanguage": "C#",
+    "framework": ".NET 8",
+    "licenseType": "MIT",
+    "categoryId": 1
+}
+
+### Update an artifact by ID
+PUT {{ArtifactsRepo_HostAddress}}/api/artifacts/1
+content-type: application/json
+
+{
+    "title": "Updated Artifact",
+    "description": "Updated Description",
+    "url": "http://example.com/updated",
+    "documentationType": "Guide",
+    "programmingLanguage": "Python",
+    "framework": "Django",
+    "licenseType": "GPL",
+    "categoryId": 2
+}
+
+### Delete an artifact by ID
+DELETE {{ArtifactsRepo_HostAddress}}/api/artifacts/1
