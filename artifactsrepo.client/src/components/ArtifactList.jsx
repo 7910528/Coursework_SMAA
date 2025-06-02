@@ -12,7 +12,7 @@ import { api } from '../services/api'
 
 const { Option } = Select
 
-const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
+const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate, itemsPerPage = 9 }) => {
     const [artifacts, setArtifacts] = useState([])
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [editingArtifact, setEditingArtifact] = useState(null)
@@ -120,6 +120,7 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
                         type="primary"
                         icon={<UploadOutlined />}
                         onClick={handleAdd}
+                        size="large"
                     >
                         Add Artifact
                     </Button>
@@ -127,43 +128,60 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
             </div>
 
             <List
-                grid={{ gutter: 16, column: 3 }}
                 dataSource={artifacts}
+                pagination={{
+                    pageSize: itemsPerPage,
+                    hideOnSinglePage: true
+                }}
                 renderItem={artifact => (
                     <List.Item>
                         <Card
-                            title={artifact.title}
+                            hoverable
+                            className="artifact-card"
+                            title={
+                                <div className="artifact-title">
+                                    <span>{artifact.title}</span>
+                                    <div className="artifact-tags">
+                                        <Tag color="blue">{artifact.documentationType}</Tag>
+                                        <Tag color="green">v{artifact.version}</Tag>
+                                        {artifact.programmingLanguage && (
+                                            <Tag color="orange">{artifact.programmingLanguage}</Tag>
+                                        )}
+                                    </div>
+                                </div>
+                            }
+                            extra={
+                                <div className="artifact-tags">
+                                    <Tag color="blue">{artifact.documentationType}</Tag>
+                                    <Tag color="green">v{artifact.version}</Tag>
+                                    {artifact.programmingLanguage && (
+                                        <Tag color="orange">{artifact.programmingLanguage}</Tag>
+                                    )}
+                                </div>
+                            }
                             actions={[
-                                <Tooltip title="Versions">
-                                    <Button
-                                        icon={<HistoryOutlined />}
-                                        onClick={() => showVersionHistory(artifact)}
-                                    />
+                                <Tooltip title="Version History">
+                                    <Button type="text" className="card-action-button" icon={<HistoryOutlined />} onClick={() => showVersionHistory(artifact)} />
                                 </Tooltip>,
                                 <Tooltip title="Edit">
-                                    <Button
-                                        icon={<EditOutlined />}
-                                        onClick={() => handleEdit(artifact)}
-                                    />
+                                    <Button type="text" className="card-action-button" icon={<EditOutlined />} onClick={() => handleEdit(artifact)} />
                                 </Tooltip>,
                                 <Tooltip title="Delete">
-                                    <Button
-                                        icon={<DeleteOutlined />}
-                                        onClick={() => handleDelete(artifact.id)}
-                                    />
+                                    <Button type="text" className="card-action-button" icon={<DeleteOutlined />} onClick={() => handleDelete(artifact.id)} />
                                 </Tooltip>,
                                 <Tooltip title="Download">
-                                    <Button
-                                        icon={<DownloadOutlined />}
-                                        href={artifact.url}
-                                        target="_blank"
-                                    />
+                                    <Button type="text" className="card-action-button" icon={<DownloadOutlined />} href={artifact.url} target="_blank" />
                                 </Tooltip>
                             ]}
                         >
-                            <p>{artifact.description}</p>
-                            <Tag color="blue">{artifact.documentationType}</Tag>
-                            <Tag color="green">v{artifact.version}</Tag>
+                            <div className="artifact-content">
+                                <p className="artifact-description">{artifact.description}</p>
+                                {artifact.framework && (
+                                    <div className="artifact-meta">
+                                        <span>Framework: {artifact.framework}</span>
+                                    </div>
+                                )}
+                            </div>
                         </Card>
                     </List.Item>
                 )}
@@ -242,13 +260,18 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
                     </Button>
                 ]}
                 onCancel={() => setVersionHistoryVisible(false)}
+                className="version-history-modal"
             >
                 <List
+                    className="version-list"
+                    itemLayout="horizontal"
                     dataSource={selectedArtifactVersions}
                     renderItem={version => (
                         <List.Item
+                            className="version-list-item"
                             actions={[
                                 <Button
+                                    type="primary"
                                     icon={<DownloadOutlined />}
                                     href={version.downloadUrl}
                                     target="_blank"
@@ -258,10 +281,20 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
                             ]}
                         >
                             <List.Item.Meta
-                                title={`Version ${version.versionNumber}`}
-                                description={version.changes}
+                                title={
+                                    <div className="version-header">
+                                        <span className="version-number">Version {version.versionNumber}</span>
+                                        <span className="version-date">
+                                            {new Date(version.uploadDate).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                }
+                                description={
+                                    <div className="version-changes">
+                                        {version.changes}
+                                    </div>
+                                }
                             />
-                            <div>{new Date(version.uploadDate).toLocaleDateString()}</div>
                         </List.Item>
                     )}
                 />

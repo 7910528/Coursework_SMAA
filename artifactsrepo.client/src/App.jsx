@@ -4,6 +4,7 @@ import CategoryTree from './components/CategoryTree'
 import ArtifactList from './components/ArtifactList'
 import { Layout, ConfigProvider, theme, App as AntApp, Menu, Dropdown, Button } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
+import { StyleProvider } from '@ant-design/cssinjs';
 
 const { Header, Sider, Content } = Layout
 
@@ -56,38 +57,50 @@ function App() {
     )
 
     return (
-        <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-            <AntApp>
-                <Layout className="app-layout">
-                    <Header className="header">
-                        <h1>Software Development Artifacts Repository</h1>
-                        <Dropdown overlay={<PreferencesMenu />}>
-                            <Button icon={<SettingOutlined />}>Preferences</Button>
-                        </Dropdown>
-                    </Header>
-                    <Layout>
-                        <Sider width={300} className="sidebar">
-                            <CategoryTree
-                                onSelectCategory={setSelectedCategory}
-                                expandedKeys={treeExpandedKeys}
-                                onExpandedKeysChange={handleExpandedKeysChange}
-                                defaultExpanded={defaultExpanded}
-                                updateTrigger={updateTrigger}
-                                onDataUpdate={handleDataUpdate}
-                            />
-                        </Sider>
-                        <Content className="content">
-                            <ArtifactList
-                                selectedCategory={selectedCategory}
-                                updateTrigger={updateTrigger}
-                                onDataUpdate={handleDataUpdate}
-                                itemsPerPage={preferences.artifactsPerPage}
-                            />
-                        </Content>
+        <StyleProvider>
+            <ConfigProvider
+                theme={{
+                    algorithm: theme.darkAlgorithm,
+                    token: {
+                        colorPrimary: '#1890ff',
+                        borderRadius: 8,
+                        colorBgContainer: 'rgba(31, 31, 31, 0.95)',
+                        colorBgElevated: 'rgba(31, 31, 31, 0.95)',
+                    }
+                }}
+            >
+                <AntApp>
+                    <Layout className="app-layout">
+                        <Header className="header">
+                            <h1>Software Development Artifacts Repository</h1>
+                            <Dropdown overlay={<PreferencesMenu />}>
+                                <Button icon={<SettingOutlined />}>Preferences</Button>
+                            </Dropdown>
+                        </Header>
+                        <Layout>
+                            <Sider width={300} className="sidebar">
+                                <CategoryTree
+                                    onSelectCategory={setSelectedCategory}
+                                    expandedKeys={treeExpandedKeys}
+                                    onExpandedKeysChange={handleExpandedKeysChange}
+                                    defaultExpanded={defaultExpanded}
+                                    updateTrigger={updateTrigger}
+                                    onDataUpdate={handleDataUpdate}
+                                />
+                            </Sider>
+                            <Content className="content">
+                                <ArtifactList
+                                    selectedCategory={selectedCategory}
+                                    updateTrigger={updateTrigger}
+                                    onDataUpdate={handleDataUpdate}
+                                    itemsPerPage={preferences.artifactsPerPage}
+                                />
+                            </Content>
+                        </Layout>
                     </Layout>
-                </Layout>
-            </AntApp>
-        </ConfigProvider>
+                </AntApp>
+            </ConfigProvider>
+        </StyleProvider>
     )
 }
 
