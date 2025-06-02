@@ -76,5 +76,26 @@ export const api = {
             method: 'DELETE'
         });
         return handleResponse(response)
+    },
+
+    async getArtifactVersions(artifactId) {
+        const response = await fetch(`${API_BASE_URL}/artifacts/${artifactId}/versions`);
+        return handleResponse(response);
+    },
+
+    async addArtifactVersion(artifactId, versionData) {
+        const response = await fetch(`${API_BASE_URL}/artifacts/${artifactId}/versions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(versionData)
+        });
+        return handleResponse(response);
+    },
+
+    async deleteArtifactVersion(artifactId, versionId) {
+        const response = await fetch(`${API_BASE_URL}/artifacts/${artifactId}/versions/${versionId}`, {
+            method: 'DELETE'
+        });
+        return handleResponse(response);
     }
 };

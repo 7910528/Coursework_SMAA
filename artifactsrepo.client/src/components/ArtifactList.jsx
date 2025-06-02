@@ -5,7 +5,8 @@ import {
 } from 'antd'
 import {
     UploadOutlined, DeleteOutlined,
-    EditOutlined, DownloadOutlined
+    EditOutlined, DownloadOutlined,
+    HistoryOutlined
 } from '@ant-design/icons'
 import { api } from '../services/api'
 
@@ -16,6 +17,11 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [editingArtifact, setEditingArtifact] = useState(null)
     const [form] = Form.useForm()
+    const [versionHistoryVisible, setVersionHistoryVisible] = useState(false)
+    const [selectedArtifactVersions, setSelectedArtifactVersions] = useState([])
+    const [versionModalVisible, setVersionModalVisible] = useState(false)
+    const [selectedArtifact, setSelectedArtifact] = useState(null)
+    const [versionForm] = Form.useForm()
 
     useEffect(() => {
         if (selectedCategory?.id) {
@@ -24,6 +30,30 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
             setArtifacts([])
         }
     }, [selectedCategory?.id, updateTrigger])
+
+    const showVersionHistory = async (artifact) => {
+        try {
+            const versions = await api.getArtifactVersions(artifact.id)
+            setSelectedArtifactVersions(versions)
+            setSelectedArtifact(artifact)
+            setVersionHistoryVisible(true)
+        } catch (error) {
+            message.error('Failed to fetch versions: ' + error)
+        }
+    }
+
+    const handleVersionSubmit = async () => {
+        try {
+            const values = await versionForm.validateFields()
+            await api.addArtifactVersion(selectedArtifact.id, values)
+            message.success('Version added successfully')
+            showVersionHistory(selectedArtifact)
+            setVersionModalVisible(false)
+            versionForm.resetFields()
+        } catch (error) {
+            message.error('Failed to add version: ' + error)
+        }
+    }
 
     const fetchArtifacts = async () => {
         if (!selectedCategory?.id) return
@@ -104,6 +134,12 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
                         <Card
                             title={artifact.title}
                             actions={[
+                                <Tooltip title="Versions">
+                                    <Button
+                                        icon={<HistoryOutlined />}
+                                        onClick={() => showVersionHistory(artifact)}
+                                    />
+                                </Tooltip>,
                                 <Tooltip title="Edit">
                                     <Button
                                         icon={<EditOutlined />}
@@ -188,6 +224,75 @@ const ArtifactList = ({ selectedCategory, updateTrigger, onDataUpdate }) => {
                     <Form.Item
                         name="url"
                         label="URL"
+                        rules={[{ required: true }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Form>
+            </Modal>
+            <Modal
+                title={`Version History - ${selectedArtifact?.title}`}
+                open={versionHistoryVisible}
+                footer={[
+                    <Button key="add" type="primary" onClick={() => setVersionModalVisible(true)}>
+                        Add Version
+                    </Button>,
+                    <Button key="close" onClick={() => setVersionHistoryVisible(false)}>
+                        Close
+                    </Button>
+                ]}
+                onCancel={() => setVersionHistoryVisible(false)}
+            >
+                <List
+                    dataSource={selectedArtifactVersions}
+                    renderItem={version => (
+                        <List.Item
+                            actions={[
+                                <Button
+                                    icon={<DownloadOutlined />}
+                                    href={version.downloadUrl}
+                                    target="_blank"
+                                >
+                                    Download
+                                </Button>
+                            ]}
+                        >
+                            <List.Item.Meta
+                                title={`Version ${version.versionNumber}`}
+                                description={version.changes}
+                            />
+                            <div>{new Date(version.uploadDate).toLocaleDateString()}</div>
+                        </List.Item>
+                    )}
+                />
+            </Modal>
+            <Modal
+                title="Add New Version"
+                open={versionModalVisible}
+                onOk={handleVersionSubmit}
+                onCancel={() => {
+                    setVersionModalVisible(false)
+                    versionForm.resetFields()
+                }}
+            >
+                <Form form={versionForm}>
+                    <Form.Item
+                        name="versionNumber"
+                        label="Version"
+                        rules={[{ required: true }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="changes"
+                        label="Changes"
+                        rules={[{ required: true }]}
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item
+                        name="downloadUrl"
+                        label="Download URL"
                         rules={[{ required: true }]}
                     >
                         <Input />

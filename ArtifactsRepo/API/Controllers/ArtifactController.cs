@@ -103,5 +103,64 @@ namespace ArtifactsRepo.API.Controllers
             _repository.Save();
             return Ok();
         }
+
+        [HttpGet("{id}/versions")]
+        public ActionResult<IEnumerable<ArtifactVersionDto>> GetVersions(int id)
+        {
+            var artifact = _repository.GetById(id);
+            if (artifact == null)
+                return NotFound();
+
+            var versions = _repository.GetVersions(id).Select(v => new ArtifactVersionDto
+            {
+                Id = v.Id,
+                VersionNumber = v.VersionNumber,
+                UploadDate = v.UploadDate,
+                Changes = v.Changes,
+                DownloadUrl = v.DownloadUrl
+            });
+
+            return Ok(versions);
+        }
+
+        [HttpPost("{id}/versions")]
+        public ActionResult AddVersion(int id, [FromBody] CreateArtifactVersionDto dto)
+        {
+            var artifact = _repository.GetById(id);
+            if (artifact == null)
+                return NotFound();
+
+            var version = new ArtifactVersion
+            {
+                VersionNumber = dto.VersionNumber,
+                Changes = dto.Changes,
+                DownloadUrl = dto.DownloadUrl,
+                UploadDate = DateTime.UtcNow,
+                SoftwareDevArtifactId = id
+            };
+
+            _repository.AddVersion(version);
+            _repository.Save();
+            return Ok();
+        }
+
+        [HttpDelete("{artifactId}/versions/{versionId}")]
+        public ActionResult DeleteVersion(int artifactId, int versionId)
+        {
+            var artifact = _repository.GetById(artifactId);
+            if (artifact == null)
+                return NotFound();
+
+            var version = artifact.Versions.FirstOrDefault(v => v.Id == versionId);
+            if (version == null)
+                return NotFound();
+
+            if (artifact.Versions.Count <= 1)
+                return BadRequest("Cannot delete the last version of an artifact");
+
+            _repository.DeleteVersion(version);
+            _repository.Save();
+            return Ok();
+        }
     }
 }

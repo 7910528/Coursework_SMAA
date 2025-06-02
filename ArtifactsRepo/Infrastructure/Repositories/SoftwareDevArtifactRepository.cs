@@ -14,10 +14,16 @@ namespace ArtifactsRepo.Infrastructure.Repositories
             _context.ArtifactVersions.Add(version);
         }
 
+        public void DeleteVersion(ArtifactVersion version)
+        {
+            _context.ArtifactVersions.Remove(version);
+        }
+
         public IEnumerable<ArtifactVersion> GetVersions(int artifactId)
         {
             return _context.ArtifactVersions
                 .Where(v => v.SoftwareDevArtifactId == artifactId)
+                .OrderByDescending(v => v.UploadDate)
                 .ToList();
         }
 

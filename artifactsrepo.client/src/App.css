@@ -7,6 +7,7 @@
     background: #001529;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .sidebar {
@@ -33,4 +34,25 @@
 
 .tree-node:hover .tree-node-actions {
     opacity: 1;
+}
+
+.version-history {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.version-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #303030;
+}
+
+.version-meta {
+    flex: 1;
+}
+
+.version-actions {
+    margin-left: 16px;
 }

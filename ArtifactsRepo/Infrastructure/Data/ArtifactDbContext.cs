@@ -26,7 +26,8 @@ namespace ArtifactsRepo.Infrastructure.Data
             modelBuilder.Entity<SoftwareDevArtifact>()
                 .HasMany(a => a.Versions)
                 .WithOne(v => v.Artifact)
-                .HasForeignKey(v => v.SoftwareDevArtifactId);
+                .HasForeignKey(v => v.SoftwareDevArtifactId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

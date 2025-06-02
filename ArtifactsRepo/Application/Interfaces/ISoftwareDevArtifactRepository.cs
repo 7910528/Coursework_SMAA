@@ -6,6 +6,7 @@ namespace ArtifactsRepo.Application.Interfaces
     {
         IEnumerable<SoftwareDevArtifact> GetByCategory(int categoryId);
         void AddVersion(ArtifactVersion version);
+        void DeleteVersion(ArtifactVersion version);
         IEnumerable<ArtifactVersion> GetVersions(int artifactId);
         SoftwareDevArtifact GetLatestVersion(int artifactId);
         void Save();

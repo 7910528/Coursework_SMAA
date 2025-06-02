@@ -52,7 +52,7 @@ namespace ArtifactsRepo.Migrations
 
                     b.HasIndex("SoftwareDevArtifactId");
 
-                    b.ToTable("ArtifactVersions");
+                    b.ToTable("ArtifactVersions", (string)null);
                 });
 
             modelBuilder.Entity("ArtifactsRepo.Domain.Entities.Category", b =>
@@ -74,7 +74,7 @@ namespace ArtifactsRepo.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("ArtifactsRepo.Domain.Entities.SoftwareDevArtifact", b =>
@@ -126,7 +126,7 @@ namespace ArtifactsRepo.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Artifacts");
+                    b.ToTable("Artifacts", (string)null);
                 });
 
             modelBuilder.Entity("ArtifactsRepo.Domain.Entities.ArtifactVersion", b =>
