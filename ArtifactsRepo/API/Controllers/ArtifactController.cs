@@ -17,25 +17,36 @@ namespace ArtifactsRepo.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ArtifactDto>> GetAll()
+        public ActionResult<IEnumerable<ArtifactDto>> GetAll([FromQuery] int? categoryId = null)
         {
-            var artifacts = _repository.GetAll().Select(a => new ArtifactDto
+            try
             {
-                Id = a.Id,
-                Title = a.Title,
-                Description = a.Description,
-                Url = a.Url,
-                DocumentationType = a.DocumentationType.ToString(),
-                Created = a.Created,
-                Author = a.Author,
-                Version = a.Version,
-                ProgrammingLanguage = a.ProgrammingLanguage,
-                Framework = a.Framework,
-                LicenseType = a.LicenseType,
-                CategoryId = a.CategoryId
-            });
+                var artifacts = categoryId.HasValue
+                    ? _repository.GetByCategory(categoryId.Value)
+                    : _repository.GetAll();
 
-            return Ok(artifacts);
+                var dtos = artifacts.Select(a => new ArtifactDto
+                {
+                    Id = a.Id,
+                    Title = a.Title,
+                    Description = a.Description,
+                    Url = a.Url,
+                    DocumentationType = a.DocumentationType.ToString(),
+                    Created = a.Created,
+                    Author = a.Author,
+                    Version = a.Version,
+                    ProgrammingLanguage = a.ProgrammingLanguage,
+                    Framework = a.Framework,
+                    LicenseType = a.LicenseType,
+                    CategoryId = a.CategoryId
+                });
+
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
         [HttpPost]

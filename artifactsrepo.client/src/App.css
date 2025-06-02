@@ -1,0 +1,36 @@
+.app-layout {
+    min-height: 100vh;
+}
+
+.header {
+    padding: 0 24px;
+    background: #001529;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar {
+    background: #001529;
+    padding: 24px;
+}
+
+.content {
+    padding: 24px;
+    background: #141414;
+}
+
+.tree-node {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 8px;
+}
+
+.tree-node-actions {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tree-node:hover .tree-node-actions {
+    opacity: 1;
+}

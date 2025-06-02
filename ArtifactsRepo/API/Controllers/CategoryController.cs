@@ -19,24 +19,29 @@ namespace ArtifactsRepo.API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<CategoryDto>> GetAll()
         {
-            var categories = _repository.GetAll().Select(c => new CategoryDto
+            // Only get root categories (where ParentCategoryId is null)
+            var rootCategories = _repository.GetAll()
+                .Where(c => c.ParentCategoryId == null)
+                .Select(c => BuildCategoryDto(c));
+
+            return Ok(rootCategories);
+        }
+
+        private CategoryDto BuildCategoryDto(Category category)
+        {
+            return new CategoryDto
             {
-                Id = c.Id,
-                Name = c.Name,
-                ParentCategoryId = c.ParentCategoryId,
-                Subcategories = c.Subcategories.Select(sc => new CategoryDto
-                {
-                    Id = sc.Id,
-                    Name = sc.Name,
-                    ParentCategoryId = sc.ParentCategoryId
-                }).ToList(),
-                Documentation = c.Documentation.ToDictionary(
+                Id = category.Id,
+                Name = category.Name,
+                ParentCategoryId = category.ParentCategoryId,
+                Subcategories = category.Subcategories
+                    .Select(sc => BuildCategoryDto(sc))
+                    .ToList(),
+                Documentation = category.Documentation.ToDictionary(
                     d => d.Key.ToString(),
                     d => d.Value
                 )
-            });
-
-            return Ok(categories);
+            };
         }
 
         [HttpPost]

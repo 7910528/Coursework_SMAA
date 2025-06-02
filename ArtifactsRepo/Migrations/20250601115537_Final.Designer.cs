@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtifactsRepo.Migrations
 {
     [DbContext(typeof(ArtifactDbContext))]
-    [Migration("20250526201028_FinalCreate")]
-    partial class FinalCreate
+    [Migration("20250601115537_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
